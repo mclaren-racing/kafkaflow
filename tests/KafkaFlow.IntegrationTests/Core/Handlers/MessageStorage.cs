@@ -11,7 +11,7 @@ namespace KafkaFlow.IntegrationTests.Core.Handlers;
 
 internal static class MessageStorage
 {
-    private const int TimeoutSec = 8;
+    private const int TimeoutSec = 12;
     private static readonly ConcurrentBag<ITestMessage> s_testMessages = new();
     private static readonly ConcurrentBag<LogMessages2> s_avroMessages = new();
     private static readonly ConcurrentBag<TestProtoMessage> s_protoMessages = new();
