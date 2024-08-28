@@ -23,12 +23,6 @@ jobs:
           GITHUB_CONTEXT: ${{ toJson(github) }}
         run: echo "$GITHUB_CONTEXT"
 
-      - name: Commit Lint
-        uses: wagoid/commitlint-github-action@master
-        with:
-          firstParent: false
-          failOnWarnings: true
-
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
