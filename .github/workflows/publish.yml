@@ -59,7 +59,8 @@ jobs:
           AZURE_DEVOPS_FEED_URL: ${{ secrets.AZURE_DEVOPS_FEED_URL }}
         run: |
           dotnet nuget add source $AZURE_DEVOPS_FEED_URL \
-            --name ADOFeed --username GitHub_Actions --password $AZURE_DEVOPS_PAT
+            --name ADOFeed --username GitHub_Actions --password $AZURE_DEVOPS_PAT \
+            --store-password-in-clear-text  # Required on non-Windows platforms
 
           dotnet nuget push ./drop/**/*.nupkg \
             --source ADOFeed \
