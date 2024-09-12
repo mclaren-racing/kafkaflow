@@ -5,16 +5,15 @@ on:
     types: [ published ]
   workflow_dispatch:
     inputs:
-      build_project:
-        description: 'Build the project before publishing (true/false). Default: true.'
-        required: false
-        default: 'true'
+      version:
+        description: 'The version/tag name to use for the package'
+        required: true
       publish_to_github:
-        description: 'Publish to GitHub Packages (true/false). Default: true.'
+        description: 'Publish to GitHub Packages (true/false).'
         required: false
         default: 'true'
       publish_to_ado:
-        description: 'Publish to Azure DevOps Artifacts (true/false). Default: true.'
+        description: 'Publish to Azure DevOps Artifacts (true/false).'
         required: false
         default: 'true'
 
@@ -31,13 +30,11 @@ jobs:
           dotnet-version: '6.0.x'
 
       - name: Setup Node
-        if: ${{ inputs.build_project == 'true' }}
         uses: actions/setup-node@v1
         with:
           node-version: '18.x'
 
       - name: Build Client App
-        if: ${{ inputs.build_project == 'true' }}
         working-directory: ./src/KafkaFlow.Admin.Dashboard/ClientApp
         run: |
           npm install
@@ -45,8 +42,7 @@ jobs:
           npm run build:prod
 
       - name: Pack
-        if: ${{ inputs.build_project == 'true' }}
-        run: dotnet pack ./KafkaFlow.sln -c Release /p:Version=${{ github.event.release.tag_name }} -o ./drop
+        run: dotnet pack ./KafkaFlow.sln -c Release /p:Version=${{ github.event.release.tag_name || inputs.version }} -o ./drop
 
       - name: Publish to GitHub Packages
         if: ${{ inputs.publish_to_github == 'true' }}
@@ -68,4 +64,4 @@ jobs:
             --skip-duplicate
 
       - name: Print Version
-        run: echo ${{ github.event.release.tag_name }}
+        run: echo ${{ github.event.release.tag_name || inputs.version }}
