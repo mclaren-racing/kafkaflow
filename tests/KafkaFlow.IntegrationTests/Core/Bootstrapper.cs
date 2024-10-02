@@ -271,7 +271,10 @@ internal static class Bootstrapper
                                             handlers =>
                                                 handlers
                                                     .WithHandlerLifetime(InstanceLifetime.Singleton)
-                                                    .AddHandler<NullMessageHandler>()
+                                                    .WhenNoHandlerFound(cxt =>
+                                                    {
+                                                        MessageStorage.AddNullMessage(cxt.ConsumerContext.Offset);
+                                                    })
                                         )))
                         .AddConsumer(
                             consumer => consumer

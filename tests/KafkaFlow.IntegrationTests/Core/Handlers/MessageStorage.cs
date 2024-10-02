@@ -17,7 +17,7 @@ internal static class MessageStorage
     private static readonly ConcurrentBag<TestProtoMessage> s_protoMessages = new();
     private static readonly ConcurrentBag<(long, int)> s_versions = new();
     private static readonly ConcurrentBag<byte[]> s_byteMessages = new();
-    private static readonly ConcurrentBag<byte[]> s_nullMessages = new();
+    private static readonly ConcurrentBag<long> s_nullMessages = new();
     private static readonly ConcurrentBag<OffsetTrackerMessage> s_offsetTrackerMessages = new();
     private static long s_offsetTrack;
 
@@ -48,7 +48,7 @@ internal static class MessageStorage
         s_byteMessages.Add(message);
     }
 
-    public static void AddNullMessage(byte[] message)
+    public static void AddNullMessage(long message)
     {
         s_nullMessages.Add(message);
     }
@@ -138,7 +138,7 @@ internal static class MessageStorage
         var start = DateTime.Now;
         while (!s_nullMessages.IsEmpty)
         {
-            if (DateTime.Now.Subtract(start).Seconds > 60) // TODO Investigate why this needs to be so long
+            if (DateTime.Now.Subtract(start).Seconds > TimeoutSec)
             {
                 Assert.Fail("Null message not received");
                 return;
