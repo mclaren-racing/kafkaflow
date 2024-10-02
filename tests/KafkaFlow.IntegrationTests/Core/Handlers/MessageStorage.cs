@@ -200,10 +200,12 @@ internal static class MessageStorage
 
     public static void Clear()
     {
-        s_versions.Clear();
         s_testMessages.Clear();
-        s_byteMessages.Clear();
+        s_avroMessages.Clear();
         s_protoMessages.Clear();
+        s_versions.Clear();
+        s_byteMessages.Clear();
+        s_nullMessages.Clear();
         s_offsetTrackerMessages.Clear();
         s_offsetTrack = 0;
     }
