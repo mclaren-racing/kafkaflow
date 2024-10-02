@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace KafkaFlow;
@@ -73,24 +74,19 @@ internal class MicrosoftDependencyConfigurator : IDependencyConfigurator
         return this;
     }
 
+    public bool IsRegistered(Type serviceType)
+    {
+        return _services.Any(service => service.ServiceType == serviceType);
+    }
+
     private static ServiceLifetime ParseLifetime(InstanceLifetime lifetime)
     {
-        switch (lifetime)
+        return lifetime switch
         {
-            case InstanceLifetime.Singleton:
-                return ServiceLifetime.Singleton;
-
-            case InstanceLifetime.Scoped:
-                return ServiceLifetime.Scoped;
-
-            case InstanceLifetime.Transient:
-                return ServiceLifetime.Transient;
-
-            default:
-                throw new ArgumentOutOfRangeException(
-                    nameof(lifetime),
-                    lifetime,
-                    null);
-        }
+            InstanceLifetime.Singleton => ServiceLifetime.Singleton,
+            InstanceLifetime.Scoped => ServiceLifetime.Scoped,
+            InstanceLifetime.Transient => ServiceLifetime.Transient,
+            _ => throw new ArgumentOutOfRangeException(nameof(lifetime), lifetime, null)
+        };
     }
 }
