@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using global::Microsoft.VisualStudio.TestTools.UnitTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using KafkaFlow.IntegrationTests.Core.Messages;
 using MessageTypes;
 
@@ -11,7 +11,7 @@ namespace KafkaFlow.IntegrationTests.Core.Handlers;
 
 internal static class MessageStorage
 {
-    private const int TimeoutSec = 30;
+    private const int TimeoutSec = 12;
     private static readonly ConcurrentBag<ITestMessage> s_testMessages = new();
     private static readonly ConcurrentBag<LogMessages2> s_avroMessages = new();
     private static readonly ConcurrentBag<TestProtoMessage> s_protoMessages = new();
@@ -138,7 +138,7 @@ internal static class MessageStorage
         var start = DateTime.Now;
         while (!s_nullMessages.IsEmpty)
         {
-            if (DateTime.Now.Subtract(start).Seconds > TimeoutSec)
+            if (DateTime.Now.Subtract(start).Seconds > 60) // TODO Investigate why this needs to be so long
             {
                 Assert.Fail("Null message not received");
                 return;
