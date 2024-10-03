@@ -217,7 +217,7 @@ internal class MessageProducer : IMessageProducer, IDisposable
                 "You should serialize or encode your message object using a middleware")
         };
 
-        return new()
+        return new Message<byte[], byte[]>
         {
             Key = key,
             Value = value,
@@ -369,7 +369,7 @@ internal class MessageProducer : IMessageProducer, IDisposable
         IMessageHeaders headers,
         IDependencyResolver messageScopedResolver)
     {
-        return new(
+        return new MessageContext(
             new Message(messageKey, messageValue),
             headers,
             messageScopedResolver,

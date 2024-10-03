@@ -105,10 +105,13 @@ public class TypedHandlerConfigurationBuilder
 
         foreach (var handlerType in _handlers)
         {
-            _dependencyConfigurator.Add(
-                handlerType,
-                handlerType,
-                _serviceLifetime);
+            if (!_dependencyConfigurator.IsRegistered(handlerType))
+            {
+                _dependencyConfigurator.Add(
+                    handlerType,
+                    handlerType,
+                    _serviceLifetime);
+            }
 
             var messageTypes = handlerType
                 .GetInterfaces()

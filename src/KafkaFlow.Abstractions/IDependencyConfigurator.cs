@@ -54,4 +54,11 @@ public interface IDependencyConfigurator
         Type serviceType,
         Func<IDependencyResolver, TImplementation> factory,
         InstanceLifetime lifetime);
+
+    /// <summary>
+    /// Returns a value indicating whether the given <see cref="Type"/> is registered.
+    /// </summary>
+    /// <param name="serviceType"><see cref="Type"/> that will be requested</param>
+    /// <returns>True if the <see cref="Type"/> is registered, otherwise false</returns>
+    bool IsRegistered(Type serviceType);
 }

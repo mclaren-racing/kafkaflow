@@ -81,6 +81,12 @@ public class UnityDependencyConfigurator : IDependencyConfigurator
         return this;
     }
 
+    /// <inheritdoc />
+    public bool IsRegistered(Type serviceType)
+    {
+        return _container.IsRegistered(serviceType);
+    }
+
     private static object ParseLifetime(InstanceLifetime lifetime) =>
         lifetime switch
         {
