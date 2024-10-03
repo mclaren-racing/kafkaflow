@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 using Confluent.Kafka;
 using Confluent.SchemaRegistry;
@@ -271,9 +272,9 @@ internal static class Bootstrapper
                                             handlers =>
                                                 handlers
                                                     .WithHandlerLifetime(InstanceLifetime.Singleton)
-                                                    .WhenNoHandlerFound(cxt =>
+                                                    .WhenNoHandlerFound(ctx =>
                                                     {
-                                                        MessageStorage.AddNullMessage(cxt.ConsumerContext.Offset);
+                                                        MessageStorage.AddNullMessageKey(Encoding.UTF8.GetString((byte[])ctx.Message.Key ?? Array.Empty<byte>()));
                                                     })
                                         )))
                         .AddConsumer(

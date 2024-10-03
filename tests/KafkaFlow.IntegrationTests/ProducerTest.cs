@@ -48,6 +48,6 @@ public class ProducerTest
         await producer.ProduceAsync(key, null);
 
         // Assert
-        await MessageStorage.AssertNullMessageAsync();
+        await MessageStorage.AssertNullMessageAsync(key);
     }
 }

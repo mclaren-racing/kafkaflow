@@ -17,7 +17,7 @@ internal static class MessageStorage
     private static readonly ConcurrentBag<TestProtoMessage> s_protoMessages = new();
     private static readonly ConcurrentBag<(long, int)> s_versions = new();
     private static readonly ConcurrentBag<byte[]> s_byteMessages = new();
-    private static readonly ConcurrentBag<long> s_nullMessages = new();
+    private static readonly ConcurrentBag<string> s_nullMessageKeys = new();
     private static readonly ConcurrentBag<OffsetTrackerMessage> s_offsetTrackerMessages = new();
     private static long s_offsetTrack;
 
@@ -48,9 +48,9 @@ internal static class MessageStorage
         s_byteMessages.Add(message);
     }
 
-    public static void AddNullMessage(long message)
+    public static void AddNullMessageKey(string key)
     {
-        s_nullMessages.Add(message);
+        s_nullMessageKeys.Add(key);
     }
 
     public static async Task AssertCountMessageAsync(ITestMessage message, int count)
@@ -133,10 +133,10 @@ internal static class MessageStorage
         }
     }
 
-    public static async Task AssertNullMessageAsync()
+    public static async Task AssertNullMessageAsync(string key)
     {
         var start = DateTime.Now;
-        while (!s_nullMessages.IsEmpty)
+        while (s_nullMessageKeys.All(x => x != key))
         {
             if (DateTime.Now.Subtract(start).Seconds > TimeoutSec)
             {
@@ -205,7 +205,7 @@ internal static class MessageStorage
         s_protoMessages.Clear();
         s_versions.Clear();
         s_byteMessages.Clear();
-        s_nullMessages.Clear();
+        s_nullMessageKeys.Clear();
         s_offsetTrackerMessages.Clear();
         s_offsetTrack = 0;
     }
