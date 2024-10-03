@@ -3,6 +3,15 @@ name: Publish
 on:
   release:
     types: [ published ]
+    inputs:
+      publish_to_github:
+        description: 'Publish to GitHub Packages (true/false).'
+        required: false
+        default: 'true'
+      publish_to_ado:
+        description: 'Publish to Azure DevOps Artifacts (true/false).'
+        required: false
+        default: 'true'
   workflow_dispatch:
     inputs:
       version:
@@ -45,11 +54,11 @@ jobs:
         run: dotnet pack ./KafkaFlow.sln -c Release /p:Version=${{ github.event.release.tag_name || inputs.version }} -o ./drop
 
       - name: Publish to GitHub Packages
-        if: ${{ inputs.publish_to_github == 'true' }}
+        if: ${{ github.event_name == 'release' || inputs.publish_to_github == 'true' }}
         run: dotnet nuget push ./drop/**/*.nupkg -k ${{ secrets.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json --skip-duplicate
 
       - name: Publish to Azure DevOps Artifacts
-        if: ${{ inputs.publish_to_ado == 'true' }}
+        if: ${{ github.event_name == 'release' || inputs.publish_to_ado == 'true' }}
         env:
           AZURE_DEVOPS_PAT: ${{ secrets.AZURE_DEVOPS_PAT }}
           AZURE_DEVOPS_FEED_URL: ${{ secrets.AZURE_DEVOPS_FEED_URL }}
