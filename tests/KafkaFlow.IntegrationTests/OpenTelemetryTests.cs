@@ -252,7 +252,7 @@ public class OpenTelemetryTests
                         .UseLogHandler<TraceLogHandler>()
                         .AddCluster(
                             cluster => cluster
-                                .WithBrokers(context.Configuration.GetValue<string>("Kafka:Brokers").Split(';'))
+                                .WithBrokers(context.Configuration.GetValue<string>("Kafka:Brokers").Split(','))
                                 .CreateTopicIfNotExists(_topicName, 1, 1)
                                 .AddProducer<GzipProducer>(
                                     producer => producer

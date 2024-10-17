@@ -28,7 +28,7 @@ public class ServiceProviderHelper
 
         var clusterBuilderAction = (HostBuilderContext context, IClusterConfigurationBuilder cluster) =>
         {
-            cluster.WithBrokers(context.Configuration.GetValue<string>("Kafka:Brokers").Split(';'));
+            cluster.WithBrokers(context.Configuration.GetValue<string>("Kafka:Brokers").Split(','));
 
             if (consumerConfiguration != null)
             {
