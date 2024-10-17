@@ -119,6 +119,7 @@ internal class ClusterManager : IClusterManager, IDisposable
                 .Select(
                     topicConfiguration => new TopicSpecification
                     {
+                        Configs = topicConfiguration.Configs,
                         Name = topicConfiguration.Name,
                         ReplicationFactor = topicConfiguration.Replicas,
                         NumPartitions = topicConfiguration.Partitions,

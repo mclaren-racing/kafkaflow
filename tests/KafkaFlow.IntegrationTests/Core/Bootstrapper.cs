@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -44,8 +45,16 @@ internal static class Bootstrapper
     private const string ProtobufGzipTopicName2 = "test-protobuf-gzip-2";
     private const string AvroTopicName = "test-avro";
     private const string NullTopicName = "test-null";
-    private const string DefaultParamsTopicName = "test-default-params";
+    internal const string DefaultParamsTopicName = "test-default-params";
     internal const string OffsetTrackerTopicName = "test-offset-tracker";
+    internal const string ModifiedConfigTopicName = "test-modified-config";
+
+    internal static readonly Dictionary<string, string> s_modifiedConfigValues = new()
+    {
+        { "retention.ms", "86400000" },
+        { "retention.bytes", "1000000000"},
+        { "cleanup.policy", "delete" }
+    };
 
     private static readonly Lazy<IServiceProvider> s_lazyProvider = new(SetupProvider);
 
@@ -88,6 +97,8 @@ internal static class Bootstrapper
     {
         var kafkaBrokers = context.Configuration.GetValue<string>("Kafka:Brokers");
         var schemaRegistryUrl = context.Configuration.GetValue<string>("SchemaRegistry:Url");
+        
+        services.AddSingleton(new AdminClient(kafkaBrokers));
 
         ConsumerConfig defaultConfig = new()
         {
@@ -106,7 +117,7 @@ internal static class Bootstrapper
                 kafka.UseLogHandler<TraceLogHandler>()
                 .AddCluster(
                     cluster => cluster
-                        .WithBrokers(kafkaBrokers.Split(';'))
+                        .WithBrokers(kafkaBrokers.Split(','))
                         .WithSchemaRegistry(config => config.Url = schemaRegistryUrl)
                         .CreateTopicIfNotExists(AvroTopicName, 1, 1)
                         .CreateTopicIfNotExists(ProtobufSchemaRegistryTopicName, 2, 1)
@@ -197,7 +208,7 @@ internal static class Bootstrapper
                                                 .AddHandler<ConfluentJsonMessageHandler>()))))
                 .AddCluster(
                     cluster => cluster
-                        .WithBrokers(kafkaBrokers.Split(';'))
+                        .WithBrokers(kafkaBrokers.Split(','))
                         .CreateTopicIfNotExists(ProtobufTopicName, 2, 1)
                         .CreateTopicIfNotExists(PauseResumeTopicName, 2, 1)
                         .CreateTopicIfNotExists(JsonTopicName, 1, 1)
@@ -208,6 +219,7 @@ internal static class Bootstrapper
                         .CreateTopicIfNotExists(NullTopicName, 1, 1)
                         .CreateTopicIfNotExists(OffsetTrackerTopicName, 1, 1)
                         .CreateTopicIfNotExists(DefaultParamsTopicName)
+                        .CreateTopicIfNotExists(s_modifiedConfigValues, ModifiedConfigTopicName)
                         .AddConsumer(
                             consumer => consumer
                                 .Topic(ProtobufTopicName)
